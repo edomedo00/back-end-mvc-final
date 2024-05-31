@@ -1,10 +1,10 @@
 const firebase = require('../config/firebase')
-const usersCollection = firebase.firestore().collection('users')
+const usersCollection = firebase.firestore().collection("users")
 
 exports.createUser = async (userData) => {
   try {
 		const user = await usersCollection.doc(userData.id).set(userData)
-		console.log('@@ modelo => ', user)
+		// console.log('@@ modelo => ', user)
 		return {
 			success: true
 		} 

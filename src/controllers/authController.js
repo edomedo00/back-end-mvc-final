@@ -24,10 +24,10 @@ exports.signup = async (req, res) => {
 		}
 
 		const userResult = await createUser(newUser)
-		console.log('@@@ result => ', userResult)
+		// console.log('@@@ result => ', userResult)
 		if (userResult.success) {
 			res.status(201).json({
-				message: 'Usuario Registrado Satisfactorifamente'
+				message: 'Usuario Registrado Satisfactoriamente'
 			})
 		} else {
 			res.status(500).json({
