@@ -19,7 +19,6 @@ const authMiddleware = (req, res, next) => {
     }
 
     const tokenValue = tokenParts[1]
-
     try {
         // Verificar y decodificar el token JWT
         const decodedToken = jwt.verify(tokenValue, process.env.TOP_SECRET);
