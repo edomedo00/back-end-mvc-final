@@ -1,6 +1,10 @@
 const bcrypt = require('bcrypt')
-const jsonwebtoken = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
+const redisClient = require('../config/redisClient');
 const { createUser, findUserByEmail} = require('../services/userServices')
+require('dotenv').config();
+
+// const client = redis.createClient();
 
 exports.signup = async (req, res) => {
   try {
@@ -59,7 +63,7 @@ exports.login = async (req, res) => {
 			})
 		}
 
-		const token = jsonwebtoken.sign({
+		const token = jwt.sign({
 			email: user.email,
 			userId: user.id
 		}, process.env.TOP_SECRET, {
@@ -74,3 +78,11 @@ exports.login = async (req, res) => {
 		})
 	}
 }
+
+exports.logout = async (req, res) => {
+  const token = req.headers.authorization.split(' ')[1];
+  await redisClient.set(token, 'blacklisted');
+  res.status(200).json({
+    message: 'Logout successful'
+  }); 
+};
