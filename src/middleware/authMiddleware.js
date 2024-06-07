@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
-const redisClient = require('../config/redisClient');
 require('dotenv').config();
 
-// const client = redis.createClient();
+let invalidatedTokens = [];
 
 const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization;
@@ -21,37 +20,29 @@ const authMiddleware = async (req, res, next) => {
   }
 
   const tokenValue = tokenParts[1];
-  console.log(tokenValue)
+
+  if (invalidatedTokens.includes(tokenValue)) {
+    return res.status(401).json({
+      message: 'Invalid Token'
+    });
+  }
 
   try {
-
-    const isBlacklisted = await redisClient.get(tokenValue);
-    console.log("yeah")
-
-    if (isBlacklisted) {
-      return res.status(401).json({
-        message: 'Token is blacklisted'
-      });
-    }
-
-    const decodedToken = jwt.verify(tokenValue, process.env.TOP_SECRET);
-    req.userData = decodedToken;
-
+    const validToken = jwt.verify(tokenValue, process.env.TOP_SECRET);
+    req.userData = validToken;
     next();
   } catch (error) {
     return res.status(401).json({
       message: 'Invalid Token'
     });
   }
-  // try {
-  //     const validToken = jwt.verify(tokenValue, process.env.TOP_SECRET)
-  //     req.userData = validToken
-  //     next()
-  // } catch (error) {
-  //     return res.status(401).json({
-  //         message: 'Invalid Token'
-  //     })
-  // }
 };
 
-module.exports = authMiddleware;
+const invalidateToken = (token) => {
+  invalidatedTokens.push(token);
+};
+
+module.exports = {
+  authMiddleware,
+  invalidateToken
+};
