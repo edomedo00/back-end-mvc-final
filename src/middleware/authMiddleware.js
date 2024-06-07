@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+let validTokens = [];
 let invalidatedTokens = [];
 
 const authMiddleware = async (req, res, next) => {
@@ -27,6 +28,12 @@ const authMiddleware = async (req, res, next) => {
     });
   }
 
+  if (!validTokens.includes(tokenValue)) {
+    return res.status(401).json({
+      message: 'No Token Provided'
+    });
+  }
+
   try {
     const validToken = jwt.verify(tokenValue, process.env.TOP_SECRET);
     req.userData = validToken;
@@ -40,9 +47,16 @@ const authMiddleware = async (req, res, next) => {
 
 const invalidateToken = (token) => {
   invalidatedTokens.push(token);
+  console.log("Invalidated Tokens: ", invalidatedTokens)
+};
+
+const validateToken = (token) => {
+  validTokens.push(token);
+  console.log("valid Tokens: ", validTokens)
 };
 
 module.exports = {
   authMiddleware,
-  invalidateToken
+  invalidateToken,
+  validateToken
 };

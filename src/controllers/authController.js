@@ -1,10 +1,10 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { createUser, findUserByEmail } = require('../services/userServices');
-const { invalidateToken } = require('../middleware/authMiddleware');
+const { invalidateToken, validateToken} = require('../middleware/authMiddleware');
 require('dotenv').config();
 
-exports.signup = async (req, res) => {
+exports.signup = async (req, res) => {  
   try {
     const { email, password, id } = req.body;
     const existingUser = await findUserByEmail(email);
@@ -65,6 +65,7 @@ exports.login = async (req, res) => {
     }, process.env.TOP_SECRET, {
       expiresIn: '1h'
     });
+    validateToken(token);
     res.status(200).json({
       token: token
     });
