@@ -1,4 +1,5 @@
 const { addItemToCart, removeItemFromCart, updateItemQuantity, getCart, clearCart } = require('../models/cartModel');
+const firebase = require('../config/firebase'); 
 const { findProductById } = require('../models/productModel'); 
 
 exports.addItemToCart = async (userId, productId, quantity) => {
