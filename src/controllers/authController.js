@@ -100,3 +100,5 @@ exports.logout = (req, res) => {
     message: 'Logout successful'
   });
 };
+
+

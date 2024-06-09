@@ -1,7 +1,7 @@
 const firebase = require('../config/firebase'); 
 const productsCollection = firebase.firestore().collection("products");
 
-exports.getProductById = async (productId) => {
+const getProductById = async (productId) => {
   try {
     const productDoc = await productsCollection.doc(productId).get(); 
 
@@ -15,3 +15,5 @@ exports.getProductById = async (productId) => {
     return { success: false, error: error.message }; 
   }
 };
+
+module.exports = { getProductById };

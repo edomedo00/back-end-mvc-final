@@ -1,7 +1,12 @@
 const cartService = require('../services/cartService');
+const jwt = require('jsonwebtoken')
 
 async function addItemToCart(req, res) {
-  const { userId, productId, quantity } = req.body;
+  const { productId, quantity } = req.body;
+
+  const token = req.headers.authorization;
+  const userId = getUserId(token);
+
   try {
     const response = await cartService.addItemToCart(userId, productId, quantity);
     if (response.success) {
@@ -43,7 +48,10 @@ async function updateItemQuantity(req, res) {
 }
 
 async function getCart(req, res) {
-  const { userId } = req.params;
+
+  const token = req.headers.authorization;
+  const userId = getUserId(token);
+  
   try {
     const response = await cartService.getCart(userId);
     if (response.success) {
@@ -54,6 +62,14 @@ async function getCart(req, res) {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+}
+
+function getUserId(token) {
+  const tokenParts = token.split(' ');
+  const tokenValue = tokenParts[1];
+
+  const decoded = jwt.verify(tokenValue, process.env.TOP_SECRET);
+  return decoded.userId;
 }
 
 module.exports = {

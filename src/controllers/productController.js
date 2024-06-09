@@ -1,21 +1,18 @@
-const firebase = require('firebase-admin');
+const productService = require('../services/productServices');
 
-const serviceAccount = require('../config/serviceAccountsKey.json'); 
-
-exports.getProductDetails = async (req, res) => {
+const getProduct = async (req, res) => {
   try {
-    const productId = req.params.productId; 
-    const productRef = firebase.firestore().collection('products').doc(productId);
-    const productDoc = await productRef.get();
+    const productId = req.params.productId;
+    const result = await productService.getProductById(productId);
 
-    if (!productDoc.exists) {
-      return res.status(404).json({ message: 'Producto no encontrado' });
+    if (result.success) {
+      res.status(200).json(result.product);
+    } else {
+      res.status(404).json({ message: result.message });
     }
-
-    const productData = productDoc.data();
-    return res.status(200).json(productData);
   } catch (error) {
-    console.error('Error al obtener detalles del producto:', error);
-    return res.status(500).json({ error: 'Error interno del servidor' });
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
+
+module.exports = { getProduct };
